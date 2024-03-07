@@ -1,15 +1,33 @@
 import cv2
 import numpy as np
 import heapq
+import os
 from NMS import nms
 from NMS import remove_little
 
+#参数
+#------------------------------------------------------------------------------------#
+#单张
+original_img = cv2.imread('test_images/image_1.jpg')
+scale_count=2
+yellow_flag=True            
+is_show_process = True
+#是否检测文件夹
+is_detect_file = False
+original_file_path = 'test_images/'
+result_file_path = 'result/'
+#------------------------------------------------------------------------------------#
 
+def detect_file(original_file_path=original_file_path,result_file_path=result_file_path,scale_count=scale_count,yellow_flag=yellow_flag,is_show_process=is_show_process):
+    for file in os.listdir(original_file_path):
+        if file.endswith('.jpg'):
+            original_img = cv2.imread(original_file_path+file)
+            result_img = detect_main(original_img,scale_count,yellow_flag,is_show_process)
+            #存储图片
+            cv2.imwrite(result_file_path+file, result_img)
 #主程序入口
-def detect_main():
-    original_img = cv2.imread('test_images\image_8.jpg')
-    img_count=4
-    yellow_flag=False
+def detect_main(original_img=original_img,img_count=scale_count,yellow_flag=yellow_flag,is_show_process=is_show_process):
+
     img_list=[]
     rect_list=[ ]
     #img_count 代表缩放次数 1280 2560 5120
@@ -18,12 +36,10 @@ def detect_main():
     for img in img_list:
         rect_list.append(detect_cones(img,yellow_flag))
     base_img=cv2.resize(original_img, (1280,1280))#在1280*1280的图上画  
-
     #NMS 用于去除重叠的框 第一个参数是box 第二个参数是score 第三个参数是阈值
     #score 用面积代替
     i=0 
     all_boxes = []
-    score = []
     for i in range(img_count):
         for rect in rect_list[i]:
             x, y, w, h = rect
@@ -46,6 +62,7 @@ def detect_main():
     cv2.resizeWindow("final", 640, 640);
     cv2.imshow('final', base_img)
     cv2.waitKey(0)
+    return base_img
 
 #函数定义部分
 def detect_cones(img,yellow_flag=False):
@@ -84,10 +101,7 @@ def detect_cones(img,yellow_flag=False):
     smoothed_img = cv2.erode(threshed_img, kernel_erode_h, iterations = 7)
     smoothed_img = cv2.dilate(smoothed_img, kernel_erode_h, iterations = 5)
 
-    # cv2.namedWindow("first erode",0);
-    # cv2.resizeWindow("first erode", 640, 640);
-    # cv2.imshow('first erode', smoothed_img)
-    # cv2.waitKey(0)
+
     # 再进行水平方向的开运算，进一步去掉噪声
     smoothed_img = cv2.erode(smoothed_img, kernel_erode_w, iterations = 2)
     # smoothed_img = cv2.dilate(smoothed_img, kernel_erode_w, iterations = 2)
@@ -97,10 +111,17 @@ def detect_cones(img,yellow_flag=False):
     mask = cv2.erode(smoothed_img, kernel_erode_w, iterations = 4)
 
     # 显示处理后的图像
-    cv2.namedWindow("proceed",0);
-    cv2.resizeWindow("proceed", 640, 640);
-    cv2.imshow('proceed', mask)
-    cv2.waitKey(0)
+    if is_show_process:
+
+        cv2.namedWindow("ori",0);
+        cv2.resizeWindow("ori", 640, 640);
+        cv2.imshow('ori', threshed_img)
+        cv2.waitKey(0)
+
+        cv2.namedWindow("proceed",0);
+        cv2.resizeWindow("proceed", 640, 640);
+        cv2.imshow('proceed', mask)
+        cv2.waitKey(0)
 
 
     contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -154,22 +175,22 @@ def detect_cones(img,yellow_flag=False):
     # # cv2.imshow('canny', canny)
     # # cv2.imshow('res', res)
     # # cv2.waitKey(0)
-    # cv2.namedWindow("contours",0);
-    # cv2.resizeWindow("contours", 640, 640);
-    # cv2.imshow('contours', imgContours)
-    # cv2.waitKey(0)
-    # cv2.namedWindow("approxContours",0);
-    # cv2.resizeWindow("approxContours", 640, 640);
-    # cv2.imshow('approxContours', img_Contours)
-    # cv2.waitKey(0)
-    # cv2.namedWindow("convexHull",0);
-    # cv2.resizeWindow("convexHull", 640, 640);
-    # cv2.imshow('convexHull', imgAllConvexHulls)
-    # cv2.waitKey(0)
-    # cv2.namedWindow("convexHull3To15",0);
-    # cv2.resizeWindow("convexHull3To15", 640, 640);
-    # cv2.imshow('convexHull3To15', imgConvexHulls3To10)
-    # cv2.waitKey(0)
+    cv2.namedWindow("contours",0);
+    cv2.resizeWindow("contours", 640, 640);
+    cv2.imshow('contours', imgContours)
+    cv2.waitKey(0)
+    cv2.namedWindow("approxContours",0);
+    cv2.resizeWindow("approxContours", 640, 640);
+    cv2.imshow('approxContours', img_Contours)
+    cv2.waitKey(0)
+    cv2.namedWindow("convexHull",0);
+    cv2.resizeWindow("convexHull", 640, 640);
+    cv2.imshow('convexHull', imgAllConvexHulls)
+    cv2.waitKey(0)
+    cv2.namedWindow("convexHull3To15",0);
+    cv2.resizeWindow("convexHull3To15", 640, 640);
+    cv2.imshow('convexHull3To15', imgConvexHulls3To10)
+    cv2.waitKey(0)
     # cv2.namedWindow("Up Cones",0);
     # cv2.resizeWindow("Up Cones", 640, 640);
     # cv2.imshow('Up Cones', imgTrafficCones)
@@ -284,4 +305,7 @@ def convexHullPointingUp(ch):
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
 if __name__ == '__main__':
-    detect_main()
+    if is_detect_file:
+        detect_file()
+    else:
+        detect_main()
