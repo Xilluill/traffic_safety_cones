@@ -18,7 +18,7 @@
 
 ​	第四阶段将图像进行多次缩放，并重复以上步骤，将在不同尺度下得到的预测框，使用非极大值抑制(NMS)算法去除重叠的部分，得到最终的预测结果。
 
-​		<img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308000656316.png" alt="image-20240308000656316" style="zoom: 25%;" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308000826852.png" alt="image-20240308000826852" style="zoom:25%;" />
+​		<img src="https://bu.dusays.com/2024/03/08/65e9f936b5d10.png" alt="image-20240308000656316" style="zoom: 25%;" /><img src="https://bu.dusays.com/2024/03/08/65e9f93b30a74.png" alt="image-20240308000826852" style="zoom:25%;" />
 
 ​						*图 1 算法最终效果图，在部分区域依然会有小尺寸的误检*
 
@@ -38,7 +38,7 @@
 
 ### 3.1 提取颜色特征
 
-​		![image-20240308003603672](C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308003603672.png)<img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308003516764.png" alt="image-20240308003516764" style="zoom: 33%;" />
+​		![image-20240308003603672](https://bu.dusays.com/2024/03/08/65e9f94193422.png)<img src="https://bu.dusays.com/2024/03/08/65e9f94308b37.png" alt="image-20240308003516764" style="zoom: 33%;" />
 
 ​				*图 2 对原始图像进行尺寸归一化，提取出路障中常见的安全红和安全黄。*
 
@@ -60,7 +60,7 @@
 
 ​	本文采用了一个*15×3*用于闭计算的卷积核，和*1×5*、*5×1*两个单独方向上的卷积核来完成上述的计划。先纵向切开相邻的路障，再横向腐蚀增大距离，再进行闭运算得到整体的形态。
 
-​			<img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308005158001.png" alt="image-20240308005158001" style="zoom:25%;" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308005215691.png" alt="image-20240308005215691" style="zoom:25%;" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308005320213.png" alt="image-20240308005320213" style="zoom:25%;" />
+​			<img src="https://bu.dusays.com/2024/03/08/65e9f9498e92c.png" alt="image-20240308005158001" style="zoom:25%;" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308005215691.png" alt="image-20240308005215691" style="zoom:25%;" /><img src="https://bu.dusays.com/2024/03/08/65e9f94d0f03f.png" alt="image-20240308005320213" style="zoom:25%;" />
 
 ​									*图 5 相邻路障检测过程展示*
 
@@ -70,7 +70,7 @@
 
 ​	*OpenCV*内置了提取轮廓的函数、多边形逼近函数、凸包计算函数，再筛选掉点过于多的多边形即可。
 
-​			<img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308005858960.png" alt="image-20240308005858960" style="zoom:25%;" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308005821392.png" alt="image-20240308005821392" style="zoom:25%;" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308005837368.png" alt="image-20240308005837368" style="zoom:25%;" />
+​			<img src="https://bu.dusays.com/2024/03/08/65e9f94e77966.png" alt="image-20240308005858960" style="zoom:25%;" /><img src="https://bu.dusays.com/2024/03/08/65e9f94fc6872.png" alt="image-20240308005821392" style="zoom:25%;" /><img src="https://bu.dusays.com/2024/03/08/65e9f953b9554.png" alt="image-20240308005837368" style="zoom:25%;" />
 
 ​									   *图 6 轮廓提取过程图*
 
@@ -94,9 +94,9 @@ Percent=\frac{两者相交的面积}{两者之间更小的box的面积}
 $$
 ​	由于大尺寸图像能够检测出更精细的*box*，因此本文认为在进行抑制的时候，大尺寸的图片的结果应该被保留，但是大尺寸图像也会产生被反光带分割的*box*，两者如何兼顾还需要进一步研究，
 
-​			<img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308011920511.png" alt="image-20240308011920511" style="zoom: 25%;" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308012044383.png" alt="image-20240308012044383" style="zoom:25%;" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308012159466.png" alt="image-20240308012159466" style="zoom:25%;" />
+​			<img src="https://bu.dusays.com/2024/03/08/65e9f95b1ff27.png" alt="image-20240308011920511" style="zoom: 25%;" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308012044383.png" alt="image-20240308012044383" style="zoom:25%;" /><img src="https://bu.dusays.com/2024/03/08/65e9f9607ec91.png" alt="image-20240308012159466" style="zoom:25%;" />
 
- 									*图 7 反光带分割的box被抑制*
+​									*图 7 反光带分割的box被抑制*
 
 ## 4.实验
 
