@@ -9,9 +9,9 @@ from NMS import remove_little
 #------------------------------------------------------------------------------------#
 #单张
 original_img = cv2.imread('test_images/image_1.jpg')
-scale_count=2
-yellow_flag=True            
-is_show_process = True
+scale_count=4
+yellow_flag=False          
+is_show_process = False
 #是否检测文件夹
 is_detect_file = False
 original_file_path = 'test_images/'
@@ -52,8 +52,9 @@ def detect_main(original_img=original_img,img_count=scale_count,yellow_flag=yell
     all_boxes = remove_little(all_boxes)
     all_boxes = np.array(all_boxes)
     #去除重叠的框
-    remain_box_index = nms(all_boxes, 0.3)
-    all_boxes = all_boxes[remain_box_index]
+    if img_count>1:
+        remain_box_index = nms(all_boxes, 0.3)
+        all_boxes = all_boxes[remain_box_index]
     #画框
     for box in all_boxes:
         x1, y1, x2, y2 = box
@@ -175,22 +176,22 @@ def detect_cones(img,yellow_flag=False):
     # # cv2.imshow('canny', canny)
     # # cv2.imshow('res', res)
     # # cv2.waitKey(0)
-    cv2.namedWindow("contours",0);
-    cv2.resizeWindow("contours", 640, 640);
-    cv2.imshow('contours', imgContours)
-    cv2.waitKey(0)
-    cv2.namedWindow("approxContours",0);
-    cv2.resizeWindow("approxContours", 640, 640);
-    cv2.imshow('approxContours', img_Contours)
-    cv2.waitKey(0)
-    cv2.namedWindow("convexHull",0);
-    cv2.resizeWindow("convexHull", 640, 640);
-    cv2.imshow('convexHull', imgAllConvexHulls)
-    cv2.waitKey(0)
-    cv2.namedWindow("convexHull3To15",0);
-    cv2.resizeWindow("convexHull3To15", 640, 640);
-    cv2.imshow('convexHull3To15', imgConvexHulls3To10)
-    cv2.waitKey(0)
+    # cv2.namedWindow("contours",0);
+    # cv2.resizeWindow("contours", 640, 640);
+    # cv2.imshow('contours', imgContours)
+    # cv2.waitKey(0)
+    # cv2.namedWindow("approxContours",0);
+    # cv2.resizeWindow("approxContours", 640, 640);
+    # cv2.imshow('approxContours', img_Contours)
+    # cv2.waitKey(0)
+    # cv2.namedWindow("convexHull",0);
+    # cv2.resizeWindow("convexHull", 640, 640);
+    # cv2.imshow('convexHull', imgAllConvexHulls)
+    # cv2.waitKey(0)
+    # cv2.namedWindow("convexHull3To15",0);
+    # cv2.resizeWindow("convexHull3To15", 640, 640);
+    # cv2.imshow('convexHull3To15', imgConvexHulls3To10)
+    # cv2.waitKey(0)
     # cv2.namedWindow("Up Cones",0);
     # cv2.resizeWindow("Up Cones", 640, 640);
     # cv2.imshow('Up Cones', imgTrafficCones)
@@ -240,7 +241,7 @@ def convexHullPointingUp(ch):
         # for point in pointsAboveCenter:
         #     if (point[0][0] < leftX) or (point[0][0] > rightX):
         #         return False
-        #根据Y找到最高的两个点 判断是否在leftx到rightx之间
+        # 根据Y找到最高的两个点 判断是否在leftx到rightx之间
         pointY = []
         for point in pointsAboveCenter:
             pointY.append(point[0][1])
@@ -254,15 +255,6 @@ def convexHullPointingUp(ch):
         secondPoint = pointsAboveCenter[top_index[1]]
         if (topPoint[0][0] < leftX) or (topPoint[0][0] > rightX) or (secondPoint[0][0] < leftX) or (secondPoint[0][0] > rightX):
             return False
-        # if abs(topPoint[0][0] - secondPoint[0][0]) > abs(leftX-rightX):
-        #     return False
-        #如果最高两个点的距离小于底部距离的一半则认为是锥体，如果最高两个点都在底部内则认为是锥体，否则不是锥体
-        # if abs(topPoint[0][0] - secondPoint[0][0]) > abs(leftX-rightX)*0.9:
-        #     return False
-        # elif (topPoint[0][0] > leftX) and (topPoint[0][0] < rightX) and (secondPoint[0][0] > leftX) and (secondPoint[0][0] < rightX):
-        #     return True
-        # else:
-        #     return False
 
     else:
         return False
