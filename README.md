@@ -61,7 +61,7 @@
 
 ​	本文采用了一个*15×3*用于闭计算的卷积核，和*1×5*、*5×1*两个单独方向上的卷积核来完成上述的计划。先纵向切开相邻的路障，再横向腐蚀增大距离，再进行闭运算得到整体的形态。
 
-<div align=center><img src="https://bu.dusays.com/2024/03/08/65e9f9498e92c.png" alt="image-20240308005158001" width="150px" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308005215691.png" alt="image-20240308005215691" width="150px" /><img src="https://bu.dusays.com/2024/03/08/65e9f94d0f03f.png" alt="image-20240308005320213" width="144px" /></div><div align = "center"><i>图 6 相邻路障检测过程展示</i></div>
+<div align=center><img src="https://bu.dusays.com/2024/03/08/65e9f9498e92c.png" alt="image-20240308005158001" width="150px" /><img src="https://bu.dusays.com/2024/03/08/65e9f94a9517b.png" alt="image-20240308005215691" width="150px" /><img src="https://bu.dusays.com/2024/03/08/65e9f94d0f03f.png" alt="image-20240308005320213" width="144px" /></div><div align = "center"><i>图 6 相邻路障检测过程展示</i></div>
 
 ### 3.4 轮廓提取
 
@@ -70,13 +70,21 @@
 <div align=center><img src="https://bu.dusays.com/2024/03/08/65e9f94e77966.png" alt="image-20240308005858960" width="150px" /><img src="https://bu.dusays.com/2024/03/08/65e9f94fc6872.png" alt="image-20240308005821392"  width="150px" /><img src="https://bu.dusays.com/2024/03/08/65e9f953b9554.png" alt="image-20240308005837368" width="150px" /></div><div align = "center"><i>图 7 轮廓提取过程图</i></div>
 
 ​	在开源项目 *[2,3]* 中，锥体提取算法均采用判断垂直中心以上的点是否有超过以下的点最左和最右边界。
+
+
 $$
 pointsAboveCenter.X > LeftX\quad or \quad pointsAboveCenter.X > RightX
 $$
+​	
+
 ​	然而这种算法无法适应拍摄视角造成的形态变形，我们可以发现经常有轮廓提取出来时，边缘是垂直底边或者稍稍歪出，这是因为进行的腐蚀操作造成的。因此本文使用了一种更加广义的锥体判断准则，即最高部分的边长不超过底长的0.8倍。
+
+
 $$
 TopWidth>RightX-LeftX
 $$
+​	
+
 ​	这使得部分小尺寸路障的识别成为可能，因为小尺寸路障的轮廓本身就接近矩形，在视角的影响下就是会出现向外侧歪曲的情况。
 
 ### 3.5 非极大值抑制
@@ -88,7 +96,10 @@ $$
 Percent=\frac{\textit{两者相交的面积}}{\textit{两者之间更小的box的面积}}
 $$
 ​	由于大尺寸图像能够检测出更精细的*box*，因此本文认为在进行抑制的时候，大尺寸的图片的结果应该被保留，但是大尺寸图像也会产生被反光带分割的*box*，两者如何兼顾还需要进一步研究。
-<div align=center><img src="https://bu.dusays.com/2024/03/08/65e9f95b1ff27.png" alt="image-20240308011920511" width="150px" /><img src="C:/Users/ZhuTianrui/AppData/Roaming/Typora/typora-user-images/image-20240308012044383.png" alt="image-20240308012044383" width="150px" /><img src="https://bu.dusays.com/2024/03/08/65e9f9607ec91.png" alt="image-20240308012159466" width="149px" /></div><div align = "center"><i>图 8 反光带分割的box被抑制</i></div>
+
+<div align=center><img src="https://bu.dusays.com/2024/03/08/65e9f95b1ff27.png" alt="image-20240308011920511" width="150px" /><img src="https://bu.dusays.com/2024/03/08/65e9f95c0307f.png" alt="image-20240308012044383" width="150px" /><img src="https://bu.dusays.com/2024/03/08/65e9f9607ec91.png" alt="image-20240308012159466" width="149px" /></div><div align = "center"><i>图 8 反光带分割的box被抑制</i>
+
+
 
 
 
